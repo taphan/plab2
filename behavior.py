@@ -40,13 +40,14 @@ class Color(Behavior):
         self.line_status = self.bbcon.line_status
 
     def consider_deactivation(self):
-        pass
+        if self.active_flag: # Forsørg at testen skjer bare når den er på
+
 
     def consider_activation(self):
         # Aktiveres kun når enden av linjen er funnet
         if self.line_status == 2:
-            self.active_flag == True
-        
+            self.active_flag = True
+
 
     def update(self):
         pass
