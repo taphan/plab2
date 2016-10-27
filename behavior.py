@@ -75,7 +75,6 @@ class FollowLine(Behavior):
         super(FollowLine, self).__init__()
         sensor = sensob.ReflectanceSensOb()
         self.sensobs.append(sensor)
-        self.active_flag = True
         self.priority = 0.7
         self.steps_line_followed = 0
         self.line_found_flag = False
@@ -161,7 +160,6 @@ class Wander(Behavior):
 
     def __init__(self):
         super(Wander, self).__init__()
-        self.active_flag = True
         self.priority = 0.3
         self.steps_this_direction = 0
         self.line_status = self.bbcon.line_status
@@ -203,3 +201,23 @@ class Wander(Behavior):
         else:
             self.steps_this_direction += 1
 
+
+class StartButton(Behavior):
+
+    def __init__(self):
+        super(StartButton, self).__init__()
+       # self.active_flag = True
+        sensor = sensob.ZumoButton()
+       # self.active_flag = False
+
+    def consider_activation(self):
+        pass
+
+    def consider_deactivation(self):
+        self.active_flag = False
+        
+    def update(self):
+        pass
+
+    def sense_and_act(self):
+        pass
