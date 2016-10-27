@@ -12,8 +12,5 @@ class Arbitrator():
         halt_request = False
         return motor_recs, halt_request
 
-    def deterministic(self):
-        pass
-
-    def stochastic(self):
+    def choose_deterministic(self):
         pass

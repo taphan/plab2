@@ -19,3 +19,5 @@ class Motob():
         elif motor_rec[0] == 'R':
             self.motors.set_value((-0.5, 0.5))
 
+    def stop_motor(self):
+        self.motors.stop()
