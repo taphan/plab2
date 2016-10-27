@@ -215,7 +215,7 @@ class StartButton(Behavior):
 
     def consider_deactivation(self):
         self.active_flag = False
-        
+
     def update(self):
         pass
 
