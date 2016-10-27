@@ -1,3 +1,4 @@
+import reflectance_sensors
 
 class Sensob():
     def update(self):
@@ -9,3 +10,7 @@ class Sensob():
     def reset(self):
         raise NotImplementedError
 
+class ReflectanceSensOb(Sensob):
+
+    def __init__(self):
+        pass
