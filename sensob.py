@@ -14,4 +14,16 @@ class Sensob():
 class ReflectanceSensOb(Sensob):
 
     def __init__(self):
-        pass
+        # bruker min og max for å kalibrere. Kan endres til auto_calibrate
+        self.sensor = reflectance_sensors.ReflectanceSensors(auto_calibrate=False, min_reading=100, max_reading=1000)
+        self.get_value()
+
+    def update(self):
+        self.updated_value = self.sensor.update()
+
+    def get_value(self):
+        self.value = self.sensor.get_value()
+
+    def reset(self):
+        self.sensor.reset()
+
