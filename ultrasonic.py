@@ -2,7 +2,6 @@ import RPi.GPIO as GPIO
 import time
 
 
-
 class Ultrasonic():
 
     def __init__(self):
