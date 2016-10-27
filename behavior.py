@@ -1,6 +1,7 @@
 import bbcon
 import sensob
 import motob
+import random
 
 class Behavior():
 
@@ -152,3 +153,53 @@ class FollowLine(Behavior):
         else:
             self.motor_recs = ('L', 0)
             self.match_degree = 0.9
+
+    def get_line_status(self):
+        return self.line_status
+
+class Wander(Behavior):
+
+    def __init__(self):
+        super(Wander, self).__init__()
+        self.active_flag = True
+        self.priority = 0.3
+        self.steps_this_direction = 0
+        self.line_status = self.bbcon.line_status
+
+    def consider_activation(self):
+        if self.line_status == 0:
+            self.active_flag = True
+
+    def consider_deactivation(self):
+        if self.line_status != 0:
+            self.active_flag = False
+
+    def update(self):
+        self.line_status = self.bbcon.line_status
+        if self.active_flag:
+            self.consider_deactivation()
+            if self.active_flag:
+                self.sense_and_act()
+        else:
+            self.consider_activation()
+            if self.active_flag:
+                self.sense_and_act()
+        self.weight = self.match_degree * self.motor_recs
+
+    def sense_and_act(self):
+        threshold = 3
+        self.match_degree = 1
+        if self.steps_this_direction > threshold:
+            rand1 = random.randint(0, 1)
+            direction = 'L'
+            if rand1 == 0:
+                direction = 'R'
+
+            degrees = random.randint(0, 90)
+
+            self.motor_recs = (direction, degrees)
+
+            self.steps_this_direction = 0
+        else:
+            self.steps_this_direction += 1
+
