@@ -65,6 +65,11 @@ class CameraSensob(Sensob):
         self.sensor.reset()
 
     def get_color(self):
+        """
+        Får bilde fra camera via get_value
+        Regner ut gjennomsnittsfargen i bildet
+        :return: fargen som dominerer, eventuelt 'unknown' hvis ingen dominerer
+        """
         img = self.get_value()
         img = img.resize((50,50))
         width = 50
