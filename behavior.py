@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-=======
+import bbcon
 import sensob
 import motob
 
@@ -7,6 +6,7 @@ class Behavior():
 
     def __init__(self):
         # Pointer to the controller that uses this behavior
+        self.bbcon = bbcon.BBCON()
         self.sensobs = []
         self.motor_recs = ('L', 0) # Recs motor to the arbitrator
         self.active_flag = False
@@ -32,4 +32,24 @@ class FollowLine(Behavior):
     def __init__(self):
         super(FollowLine, self).__init__()
 
->>>>>>> 1c284e654b8fbe120ca9e9f2bade65600b0e0d67
+class Color(Behavior):
+
+    def __init__(self):
+        super(Color, self).__init__()
+        self.priority = 1
+        self.line_status = self.bbcon.line_status
+
+    def consider_deactivation(self):
+        pass
+
+    def consider_activation(self):
+        # Aktiveres kun når enden av linjen er funnet
+        if self.line_status == 2:
+            self.active_flag == True
+        
+
+    def update(self):
+        pass
+
+    def sense_and_act(self):
+        pass
