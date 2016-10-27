@@ -1,12 +1,9 @@
 import reflectance_sensors
 import ultrasonic
-<<<<<<< HEAD
 import zumo_button
-=======
 import camera
 from PIL import Image
 
->>>>>>> 7cc6b53b2c801de3890d4c6d16bcf952ea8617a6
 
 class Sensob():
     def update(self):
@@ -35,11 +32,6 @@ class ReflectanceSensOb(Sensob):
     def reset(self):
         self.sensor.reset()
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 7cc6b53b2c801de3890d4c6d16bcf952ea8617a6
-
 class UltrasonicSensOb(Sensob):
 
     def __init__(self):
@@ -54,13 +46,11 @@ class UltrasonicSensOb(Sensob):
     def reset(self):
         self.sensor.reset()
 
-<<<<<<< HEAD
 class ZumoButton():
 
     def __init__(self):
         self.button = zumo_button.ZumoButton()
         self.button.wait_for_press() # ZumoButton må bli instansiert i en høyere klasse, venter for trykk
-=======
 
 class CameraSensob(Sensob):
 
@@ -111,4 +101,3 @@ class CameraSensob(Sensob):
             self.color = 'unknown'
 
         return self.color
->>>>>>> 7cc6b53b2c801de3890d4c6d16bcf952ea8617a6

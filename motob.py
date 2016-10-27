@@ -15,7 +15,7 @@ class Motob():
     def operationalize(self, mr):
         # Først sjekk om mr er for venstre eller høyre hjul, mr er f.eks. (L, 45)
         if mr[0] == 'L':
-            self.motors.set_value((mr[1], 0))
+            self.motors.set_value((0.5, -0.5)) # Endrer på disse verdiene etter testing
         elif mr[0] == 'R':
-            self.motors.set_value((0, mr[1]))
+            self.motors.set_value((-0.5, 0.5))
 
