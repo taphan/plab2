@@ -1,6 +1,8 @@
 import reflectance_sensors
 import ultrasonic
+import zumo_button
 import camera
+import irproximity_sensor
 from PIL import Image
 
 
@@ -31,7 +33,6 @@ class ReflectanceSensOb(Sensob):
     def reset(self):
         self.sensor.reset()
 
-
 class UltrasonicSensOb(Sensob):
 
     def __init__(self):
@@ -42,6 +43,25 @@ class UltrasonicSensOb(Sensob):
 
     def get_value(self):
         return self.sensor.get_value()
+
+    def reset(self):
+        self.sensor.reset()
+
+class ZumoButton():
+
+    def __init__(self):
+        self.button = zumo_button.ZumoButton()
+        self.button.wait_for_press() # ZumoButton må bli instansiert i en høyere klasse, venter for trykk
+
+
+class IRProximitySensob():
+    def __init__(self):
+        self.sensor = irproximity_sensor.IRProximitySensor()
+        self.values = self.sensor.get_value()
+
+    def update(self):
+        self.values = self.sensor.update()
+        return self.values
 
     def reset(self):
         self.sensor.reset()
@@ -65,6 +85,11 @@ class CameraSensob(Sensob):
         self.sensor.reset()
 
     def get_color(self):
+        """
+        Får bilde fra camera via get_value
+        Regner ut gjennomsnittsfargen i bildet
+        :return: fargen som dominerer, eventuelt 'unknown' hvis ingen dominerer
+        """
         img = self.get_value()
         img = img.resize((50,50))
         width = 50
