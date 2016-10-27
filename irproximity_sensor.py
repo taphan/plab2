@@ -1,6 +1,5 @@
 import RPi.GPIO as GPIO
 
-
 class IRProximitySensor:
     def __init__(self):
         self.value = None

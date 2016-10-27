@@ -2,6 +2,7 @@ import bbcon
 import sensob
 import motob
 import math
+import random
 
 class Behavior():
 
@@ -35,24 +36,43 @@ class Color(Behavior):
         super(Color, self).__init__()
         self.priority = 1
         self.line_status = self.bbcon.line_status
+        self.sensor = sensob.CameraSensob()
+        self.sensobs.append(self.sensor)
 
     def consider_deactivation(self):
-        pass
+        if self.active_flag: # Forsørg at testen skjer bare når den er på
+            self.active_flag = False
 
     def consider_activation(self):
         # Aktiveres kun når enden av linjen er funnet
         if self.line_status == 2:
-            self.active_flag == True
-        
+            self.active_flag = True
 
     def update(self):
-        pass
+        if not self.active_flag:
+            self.sensor.reset()
+        else:
+            self.sense_and_act()
+            self.weight = self.priority*self.match_degree
 
     def sense_and_act(self):
-        pass
+        """
+        Rød: Snu venstre
+        Blå: Snu høyre
+        Grønn: Snu 180 grader og stopp
+        """
+        self.sensor.update()
+        color = self.sensor.get_color()
+        if color == 'red':
+            self.motor_recs = ('L', 90)
+        elif color == 'blue':
+            self.motor_recs = ('R', 90)
+        else:
+            self.motor_recs = ('L', 180)
+            self.halt_request = True # Stopper hele testen dersom
+
 
 class FollowLine(Behavior):
-
     def __init__(self):
         super(FollowLine, self).__init__()
         sensor = sensob.ReflectanceSensOb()
@@ -61,21 +81,31 @@ class FollowLine(Behavior):
         self.priority = 0.7
         self.steps_line_followed = 0
         self.line_found_flag = False
+        self.line_status = 0  # 0:found, 1: follows, 2: end reached
+        self.last_left = False
 
     def consider_deactivation(self):
-        line_status = 1
-        if line_status == 2:
+        if self.line_status == 2:
             self.active_flag = False
             return True
 
     def consider_activation(self):
-        line_status = 0
-        if line_status == 0:
+        if self.line_status == 0:
             self.active_flag = True
             return True
-        elif line_status == 1:
+        elif self.line_status == 1:
             self.active_flag = True
             return True
+
+    def update(self):
+        if self.active_flag:
+            self.consider_deactivation()
+            if self.active_flag:
+                self.sense_and_act()
+        else:
+            self.consider_activation()
+            if self.active_flag:
+                self.sense_and_act()
 
     def sense_and_act(self):
         if self.line_found_flag:
@@ -84,9 +114,98 @@ class FollowLine(Behavior):
             self.find_line()
     def find_line(self):
         sensor = self.sensobs[0]
+        self.weight = self.match_degree * self.priority
+
+    def find_line(self):
+        self.sensobs[0].update()
+        sensor_values = self.sensobs[0].get_value()
+
+        threshold = 0.75
+
+        if sensor_values[5] - sensor_values[1] > threshold:
+            # black line found
+            self.line_found_flag = True
+            # turn 30 degrees left
+            self.motor_recs = ('L', 30)
+            self.match_degree = 1
+            self.line_status = 1
+        elif sensor_values[0] - sensor_values[5] < threshold:
+            # white line found
+            # turn around (180 degrees left)
+            self.motor_recs = ('L', 180)
+            self.match_degree = 1
 
     def follow_line(self):
-        pass
+        threshold = 0.75
+
+        self.sensobs[0].update()
+        sensor_values = self.sensobs[0].get_value()
+
+        if sensor_values[5] == sensor_values[4] and sensor_values[3] - sensor_values[5] > threshold:
+            # end of line found
+            self.line_status = 2
+            self.match_degree = 1
+            self.motor_recs = ('L', 0)
+        elif sensor_values[5] == sensor_values[3] and sensor_values[1] - sensor_values[4] > threshold:
+            if self.last_left:
+                self.last_left = False
+                self.motor_recs = ('R', 5)
+            else:
+                self.last_left = True
+                self.motor_recs = ('L', 5)
+            self.match_degree = sensor_values[1] - sensor_values[4]
+        else:
+            self.motor_recs = ('L', 0)
+            self.match_degree = 0.9
+
+    def get_line_status(self):
+        return self.line_status
+
+class Wander(Behavior):
+
+    def __init__(self):
+        super(Wander, self).__init__()
+        self.active_flag = True
+        self.priority = 0.3
+        self.steps_this_direction = 0
+        self.line_status = self.bbcon.line_status
+
+    def consider_activation(self):
+        if self.line_status == 0:
+            self.active_flag = True
+
+    def consider_deactivation(self):
+        if self.line_status != 0:
+            self.active_flag = False
+
+    def update(self):
+        self.line_status = self.bbcon.line_status
+        if self.active_flag:
+            self.consider_deactivation()
+            if self.active_flag:
+                self.sense_and_act()
+        else:
+            self.consider_activation()
+            if self.active_flag:
+                self.sense_and_act()
+        self.weight = self.match_degree * self.motor_recs
+
+    def sense_and_act(self):
+        threshold = 3
+        self.match_degree = 1
+        if self.steps_this_direction > threshold:
+            rand1 = random.randint(0, 1)
+            direction = 'L'
+            if rand1 == 0:
+                direction = 'R'
+
+            degrees = random.randint(0, 90)
+
+            self.motor_recs = (direction, degrees)
+
+            self.steps_this_direction = 0
+        else:
+            self.steps_this_direction += 1
 
 
 class AvoidObstacles(Behavior):
@@ -113,7 +232,7 @@ class AvoidObstacles(Behavior):
             self.match_degree = 0
         else:    # If distance is between 0 to 20cm
             self.match_degree = abs( (self.ultra.get_value()/20) - 1)  # -1 to invert the scaled value
-            self.motor_recs = ('L', 90)
+            self.motor_recs = ('L', 90)   # Guarantee that robot will move away from the wall at one point
 
 
     def update(self):
