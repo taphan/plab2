@@ -2,6 +2,7 @@ import reflectance_sensors
 import ultrasonic
 import zumo_button
 import camera
+import irproximity_sensor
 from PIL import Image
 
 
@@ -51,6 +52,20 @@ class ZumoButton():
     def __init__(self):
         self.button = zumo_button.ZumoButton()
         self.button.wait_for_press() # ZumoButton må bli instansiert i en høyere klasse, venter for trykk
+
+
+class IRProximitySensob():
+    def __init__(self):
+        self.sensor = irproximity_sensor.IRProximitySensor()
+        self.values = self.sensor.get_value()
+
+    def update(self):
+        self.values = self.sensor.update()
+        return self.values
+
+    def reset(self):
+        self.sensor.reset()
+
 
 class CameraSensob(Sensob):
 
