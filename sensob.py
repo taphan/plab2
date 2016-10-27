@@ -1,6 +1,8 @@
 import reflectance_sensors
 import ultrasonic
 import camera
+from PIL import Image
+
 
 class Sensob():
     def update(self):
@@ -48,7 +50,9 @@ class UltrasonicSensOb(Sensob):
 class CameraSensob(Sensob):
 
     def __init__(self):
-        self.sensor = camera.Camera()
+        self.img_width = 128
+        self.img_height = 96
+        self.sensor = camera.Camera(self.img_width, self.img_height)
 
     def update(self):
         self.value = self.sensor.update()
@@ -59,3 +63,31 @@ class CameraSensob(Sensob):
 
     def reset(self):
         self.sensor.reset()
+
+    def get_color(self):
+        img = self.get_value()
+        img = img.resize((50,50))
+        width = 50
+        height = 50
+
+        r_ave = 0
+        g_ave = 0
+        b_ave = 0
+
+        for x in range(0, width):
+            for y in range(0, height):
+                r, g, b = img.getpixel((x, y))
+                r_ave = (r + r_ave) / 2
+                g_ave = (g + g_ave) / 2
+                b_ave = (b + b_ave) / 2
+
+        if r_ave >= g_ave and r_ave >= b_ave:
+            self.color = 'red'
+        elif g_ave >= r_ave and g_ave >= b_ave:
+            self.color = 'green'
+        elif b_ave >= r_ave and b_ave >= g_ave:
+            self.color = 'blue'
+        else:
+            self.color = 'unknown'
+
+        return self.color
