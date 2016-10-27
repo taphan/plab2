@@ -1,5 +1,6 @@
 import reflectance_sensors
 import ultrasonic
+import zumo_button
 
 class Sensob():
     def update(self):
@@ -27,10 +28,7 @@ class ReflectanceSensOb(Sensob):
     def reset(self):
         self.sensor.reset()
 
-<<<<<<< HEAD
-=======
-        pass
-<<<<<<< HEAD
+
 
 class UltrasonicSensOb(Sensob):
 
@@ -46,8 +44,8 @@ class UltrasonicSensOb(Sensob):
     def reset(self):
         self.sensor.reset()
 
-=======
->>>>>>> 8bd62f43ea012c869422fc0c361a5e503f685409
->>>>>>> d35c6a8ae1bc0d3d7d5796cda43ea47f18f6a565
-=======
->>>>>>> 7a6e5c7bf6d7477906e102ba9d046a8d6bcb9c98
+class ZumoButton():
+
+    def __init__(self):
+        self.button = zumo_button.ZumoButton()
+        self.button.wait_for_press() # ZumoButton må bli instansiert i en høyere klasse, venter for trykk
