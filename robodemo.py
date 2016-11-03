@@ -8,12 +8,21 @@ from camera import Camera
 from motors import Motors
 from ultrasonic import Ultrasonic
 from zumo_button import ZumoButton
-
+import arbitrator
+import bbcon
+import behavior
+import motob
+import sensob
 
 ## BE SURE TO RUN THESE DEMOS ON THE FLOOR or to have plenty of people guarding
 ## #  the edges of a table if it is run there.
 
 # This just moves the robot around in a fixed dance pattern.  It uses no sensors.
+
+def main():
+    ZumoButton().wait_for_press()
+
+
 
 def dancer():
     ZumoButton().wait_for_press()
@@ -39,9 +48,11 @@ def explorer(dist=10):
     m.left(.5,3)
     m.right(.5,3.5)
     sleep(2)
+    print("tester ultrasonic:", u.get_value(), u.update())
     while u.update() < dist*5:
         m.backward(.2,0.2)
     m.left(.75,5)
+    m.stop()
 
 
 

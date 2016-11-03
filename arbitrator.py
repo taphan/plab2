@@ -2,7 +2,7 @@ import bbcon
 
 class Arbitrator():
 
-    def __init__(self, our_bbcon = bbcon.BBCON()):
+    def __init__(self, our_bbcon=bbcon.BBCON()):
         self.bbcon = our_bbcon
         self.active_behaviors = self.bbcon.active_behaviors
 

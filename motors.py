@@ -14,8 +14,6 @@ class Motors():
         self.normal = 300
         self.low = 100
 
-        wp.wiringPiSetupGpio()
-
         wp.pinMode(18, 2)
         wp.pinMode(19, 2)
         wp.pinMode(23, 1)
