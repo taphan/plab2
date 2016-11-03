@@ -54,7 +54,7 @@ class ZumoButton():
         self.button.wait_for_press() # ZumoButton må bli instansiert i en høyere klasse, venter for trykk
 
 
-class IRProximitySensob():
+class IRProximitySensob(Sensob):
     def __init__(self):
         self.sensor = irproximity_sensor.IRProximitySensor()
         self.values = self.sensor.get_value()
