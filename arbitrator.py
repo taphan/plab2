@@ -1,4 +1,4 @@
-from plab2 import bbcon
+import bbcon
 import random
 
 class Arbitrator():

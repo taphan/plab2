@@ -8,7 +8,7 @@ from camera import Camera
 from motors import Motors
 from ultrasonic import Ultrasonic
 from zumo_button import ZumoButton
-import arbitrator
+#import arbitrator
 import bbcon
 import behavior
 import motob
@@ -21,7 +21,11 @@ import sensob
 
 def main():
     ZumoButton().wait_for_press()
-
+    motor_recs = ('L',45)
+    m = motob.Motob()
+    m.update(motor_recs)
+    bbc = bbcon.BBCON()
+    bbc.arbitrator.choose_action()
 
 
 def dancer():
@@ -52,8 +56,6 @@ def explorer(dist=10):
     while u.update() < dist*5:
         m.backward(.2,0.2)
     m.left(.75,5)
-    m.stop()
-
 
 
 def random_step(motors,speed=0.25,duration=1):
