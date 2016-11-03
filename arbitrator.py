@@ -2,12 +2,8 @@ from plab2 import bbcon
 import random
 
 class Arbitrator():
-<<<<<<< HEAD
 
-    def __init__(self, our_bbcon=bbcon.BBCON()):
-=======
     def __init__(self,our_bbcon=bbcon.BBCON()):
->>>>>>> da0cabaa75d1e57e7cf0628ffce0dfecd2fc89c4
         self.bbcon = our_bbcon
         self.stochastic = False
         self.motor_recs = None
