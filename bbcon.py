@@ -30,12 +30,14 @@ class BBCON():
 
     def activate_behavior(self, behavior):
         # Add an existing behavior onto the active-behaviors list.
-        if behavior in self.behaviors and behavior.active_flag == True:
+        if behavior in self.behaviors:
+            behavior.active_flag = True
             self.active_behaviors.append(behavior)
 
     def deactive_behavior(self, behavior):
         # Remove an existing behavior from the active behaviors list.
-        if behavior in self.behaviors and behavior.active_flag == False:
+        if behavior in self.behaviors:
+            behavior.active_flag = False
             self.active_behaviors.remove(behavior)
 
     def run_one_step(self):

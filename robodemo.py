@@ -10,6 +10,9 @@ from ultrasonic import Ultrasonic
 from zumo_button import ZumoButton
 import arbitrator
 import bbcon
+import sensob
+import behavior
+import motob
 
 
 ## BE SURE TO RUN THESE DEMOS ON THE FLOOR or to have plenty of people guarding
@@ -20,6 +23,11 @@ import bbcon
 def main():
     our_arbitrator = arbitrator.Arbitrator(our_bbcon=bbcon.BBCON())
     our_bbcon = our_arbitrator.bbcon
+    our_motob = motob.Motob()
+    color = behavior.Color()
+    wander = behavior.Wander()
+    our_bbcon.add_behavior(color)
+    our_bbcon.add_behavior(wander)
 
 
 
