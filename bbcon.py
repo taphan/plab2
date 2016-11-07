@@ -5,7 +5,7 @@ import motob
 import time
 
 class BBCON():
-    def __init__(self, arb=arbitrator.Arbitrator()):
+    def __init__(self):
         """
         0: Line not found
         1: Line found
@@ -18,7 +18,7 @@ class BBCON():
         self.active_behaviors = []
         self.sensobs = []
         self.motobs = []
-        self.arbitrator = arb
+        self.arbitrator = None
 
     def add_behavior(self, behavior):
         # Append a newly-created behavior onto the behaviors list.

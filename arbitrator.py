@@ -3,7 +3,7 @@ import random
 
 class Arbitrator():
 
-    def __init__(self,our_bbcon=bbcon.BBCON()):
+    def __init__(self,our_bbcon):
         self.bbcon = our_bbcon
         self.stochastic = False
         self.motor_recs = None
