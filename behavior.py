@@ -122,18 +122,14 @@ class FollowLine(Behavior):
 
         threshold = 0.75
 
-        if sensor_values[5] - sensor_values[1] > threshold:
+        if sum(sensor_values) < 1:
+            #line found
             # black line found
             self.line_found_flag = True
             # turn 30 degrees left
             self.motor_recs = ('L', 30)
             self.match_degree = 1
             self.line_status = 1
-        elif sensor_values[0] - sensor_values[5] < threshold:
-            # white line found
-            # turn around (180 degrees left)
-            self.motor_recs = ('L', 180)
-            self.match_degree = 1
 
     def follow_line(self):
         threshold = 0.75
@@ -141,12 +137,7 @@ class FollowLine(Behavior):
         self.sensobs[0].update()
         sensor_values = self.sensobs[0].get_value()
 
-        if sensor_values[5] == sensor_values[4] and sensor_values[3] - sensor_values[5] > threshold:
-            # end of line found
-            self.line_status = 2
-            self.match_degree = 1
-            self.motor_recs = ('L', 0)
-        elif sensor_values[5] == sensor_values[3] and sensor_values[1] - sensor_values[4] > threshold:
+        if sensor_values[5] == sensor_values[3] and sensor_values[1] - sensor_values[4] > threshold:
             if self.last_left:
                 self.last_left = False
                 self.motor_recs = ('R', 5)
