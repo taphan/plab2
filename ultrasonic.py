@@ -1,13 +1,12 @@
 import RPi.GPIO as GPIO
 import time
 
-
 class Ultrasonic():
 
     def __init__(self):
         self.value = None
-        self.trig_pin = 32
-        self.echo_pin = 31
+        self.trig_pin = 26
+        self.echo_pin = 11
         self.setup()
 
     def setup(self):
@@ -17,6 +16,7 @@ class Ultrasonic():
 
     def update(self):
         self.value = self.sensor_get_value()
+        return self.value
 
     def reset(self):
         self.value = None

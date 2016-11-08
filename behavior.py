@@ -3,6 +3,7 @@ import sensob
 import motob
 import math
 import random
+import motors
 
 class Behavior():
 
@@ -200,6 +201,7 @@ class Wander(Behavior):
             degrees = random.randint(0, 90)
 
             self.motor_recs = (direction, degrees)
+            self.bbcon.add_behavior(self)
 
             self.steps_this_direction = 0
         else:
@@ -257,3 +259,29 @@ class StartButton(Behavior):
 
     def sense_and_act(self):
         pass
+
+class TestClass(Behavior):
+    '''
+def dancer():
+    ZumoButton().wait_for_press()
+    m = Motors()
+    m.forward(.2,3)
+    m.backward(.2,3)
+    m.right(.5,3)
+    m.left(.5,3)
+    m.backward(.3,2.5)
+    m.set_value([.5,.1],10)
+    m.set_value([-.5,-.1],10)'''
+    def __init__(self):
+        super(TestClass, self).__init__()
+        sensor = sensob.ZumoButton()
+
+    def update(self):
+        m =  motors.Motors()
+        m.forward(.2, 3)
+        m.backward(.2, 3)
+        m.right(.5, 3)
+        m.left(.5, 3)
+        m.backward(.3, 2.5)
+        m.set_value([.5, .1], 10)
+        m.set_value([-.5, -.1], 10)

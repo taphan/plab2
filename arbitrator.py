@@ -1,8 +1,9 @@
-from plab2 import bbcon
+import bbcon
 import random
 
 class Arbitrator():
-    def __init__(self,our_bbcon=bbcon.BBCON()):
+
+    def __init__(self,our_bbcon):
         self.bbcon = our_bbcon
         self.motor_recs = None
         self.halt_request = False

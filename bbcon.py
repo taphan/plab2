@@ -17,8 +17,8 @@ class BBCON():
         self.behaviors = []
         self.active_behaviors = []
         self.sensobs = []
-        self.motobs = []
-        self.arbitrator = arbitrator.Arbitrator()
+        self.motob = motob.Motob()
+        self.arbitrator = arbitrator.Arbitrator(self)
 
     def add_behavior(self, behavior):
         # Append a newly-created behavior onto the behaviors list.
@@ -30,12 +30,14 @@ class BBCON():
 
     def activate_behavior(self, behavior):
         # Add an existing behavior onto the active-behaviors list.
-        if behavior in self.behaviors and behavior.active_flag == True:
+        if behavior in self.behaviors:
+            behavior.active_flag = True
             self.active_behaviors.append(behavior)
 
     def deactive_behavior(self, behavior):
         # Remove an existing behavior from the active behaviors list.
-        if behavior in self.behaviors and behavior.active_flag == False:
+        if behavior in self.behaviors:
+            behavior.active_flag = False
             self.active_behaviors.remove(behavior)
 
     def run_one_step(self):
@@ -47,14 +49,17 @@ class BBCON():
 
         # Invoke the arbitrator by calling arbitrator.choose action, which will choose a winning behavior and
         # return that behavior's motor recommendations and halt request flag.
-        motor_recs, halt_request = self.arbitrator.choose_action()
-
+        #motor_recs, halt_request = self.arbitrator.choose_action()
+        motor_recs = ('L',90)
+        halt_request = False
         # Update the motobs based on these motor recommendations. The motobs will then update the settings of all motors
-        for motob in self.motobs:
-            if not halt_request:
-                motob.update(motor_recs)
-            else:
-                motob.stop_motor()
+        #for motob in self.motobs:
+        print("test", motor_recs)
+        if not halt_request:
+            self.motob.update(motor_recs)
+        else:
+            self.motob.stop_motor()
+
 
 
         # Wait - This pause (in code execution) will allow the motor settings to remain active for a short period

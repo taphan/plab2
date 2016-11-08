@@ -8,12 +8,33 @@ from camera import Camera
 from motors import Motors
 from ultrasonic import Ultrasonic
 from zumo_button import ZumoButton
+import arbitrator
+import bbcon
+import sensob
+import behavior
+import motob
 
 
 ## BE SURE TO RUN THESE DEMOS ON THE FLOOR or to have plenty of people guarding
 ## #  the edges of a table if it is run there.
 
 # This just moves the robot around in a fixed dance pattern.  It uses no sensors.
+
+def main():
+    #our_arbitrator = arbitrator.Arbitrator(our_bbcon=bbcon.BBCON())
+    our_bbcon = bbcon.BBCON()
+    our_arbitrator = our_bbcon.arbitrator
+    '''color = behavior.Color()
+    our_bbcon.add_behavior(color)
+    our_bbcon.add_behavior(wander)
+    test = behavior.TestClass()'''
+
+    wander = behavior.Wander()
+    wander.active_flag = True
+    wander.update()
+    our_arbitrator.motor_recs = wander.motor_recs
+    our_bbcon.run_one_step()
+
 
 def dancer():
     ZumoButton().wait_for_press()
@@ -39,7 +60,9 @@ def explorer(dist=10):
     m.left(.5,3)
     m.right(.5,3.5)
     sleep(2)
+    print("test:", u.get_value())
     while u.update() < dist*5:
+        print(u.update())
         m.backward(.2,0.2)
     m.left(.75,5)
 
@@ -63,7 +86,7 @@ def tourist(steps=25,shots=5,speed=.25):
             im = shoot_panorama(c,m,shots)
             im.dump_image('vacation_pic'+str(i)+'.jpeg')
 
-def shoot_panorama(camera,motors,shots=5):
+def shoot_panorama(camera=Camera(),motors=Motors(),shots=5):
     s = 1
     im = IMR.Imager(image=camera.update()).scale(s,s)
     rotation_time = 3/shots # At a speed of 0.5(of max), it takes about 3 seconds to rotate 360 degrees

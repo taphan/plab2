@@ -14,4 +14,3 @@ class ZumoButton():
             read_val = wp.digitalRead(22)
         print("Button pressed!!")
 
-        # Her må en behavior som f.eks. vandring instansiert
