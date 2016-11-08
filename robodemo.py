@@ -21,9 +21,9 @@ import motob
 # This just moves the robot around in a fixed dance pattern.  It uses no sensors.
 
 def main():
-    our_arbitrator = arbitrator.Arbitrator(our_bbcon=bbcon.BBCON())
-    our_bbcon = our_arbitrator.bbcon
-    our_motob = motob.Motob()
+    #our_arbitrator = arbitrator.Arbitrator(our_bbcon=bbcon.BBCON())
+    our_bbcon = bbcon.BBCON()
+    our_arbitrator = our_bbcon.arbitrator
     '''color = behavior.Color()
     our_bbcon.add_behavior(color)
     our_bbcon.add_behavior(wander)
@@ -32,8 +32,9 @@ def main():
     wander = behavior.Wander()
     wander.active_flag = True
     wander.update()
-    our_arbitrator.motor_recs.append(wander.motor_recs)
+    our_arbitrator.motor_recs = wander.motor_recs
     our_bbcon.run_one_step()
+
 
 def dancer():
     ZumoButton().wait_for_press()

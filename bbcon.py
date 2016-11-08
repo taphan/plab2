@@ -17,8 +17,8 @@ class BBCON():
         self.behaviors = []
         self.active_behaviors = []
         self.sensobs = []
-        self.motobs = []
-        self.arbitrator = None
+        self.motob = motob.Motob()
+        self.arbitrator = arbitrator.Arbitrator(self)
 
     def add_behavior(self, behavior):
         # Append a newly-created behavior onto the behaviors list.
@@ -53,11 +53,12 @@ class BBCON():
         motor_recs = ('L',90)
         halt_request = False
         # Update the motobs based on these motor recommendations. The motobs will then update the settings of all motors
-        for motob in self.motobs:
-            if not halt_request:
-                motob.update(motor_recs)
-            else:
-                motob.stop_motor()
+        #for motob in self.motobs:
+        print("test", motor_recs)
+        if not halt_request:
+            self.motob.update(motor_recs)
+        else:
+            self.motob.stop_motor()
 
 
 
