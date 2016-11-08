@@ -6,7 +6,7 @@ class Arbitrator():
     def __init__(self,our_bbcon):
         self.bbcon = our_bbcon
         self.stochastic = False
-        self.motor_recs = None
+        self.motor_recs = []
         self.halt_request = False
 
     def choose_action(self,stochastic = False):

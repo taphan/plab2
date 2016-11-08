@@ -24,12 +24,16 @@ def main():
     our_arbitrator = arbitrator.Arbitrator(our_bbcon=bbcon.BBCON())
     our_bbcon = our_arbitrator.bbcon
     our_motob = motob.Motob()
-    color = behavior.Color()
-    wander = behavior.Wander()
+    '''color = behavior.Color()
     our_bbcon.add_behavior(color)
     our_bbcon.add_behavior(wander)
+    test = behavior.TestClass()'''
 
-
+    wander = behavior.Wander()
+    wander.active_flag = True
+    wander.update()
+    our_arbitrator.motor_recs.append(wander.motor_recs)
+    our_bbcon.run_one_step()
 
 def dancer():
     ZumoButton().wait_for_press()
@@ -81,7 +85,7 @@ def tourist(steps=25,shots=5,speed=.25):
             im = shoot_panorama(c,m,shots)
             im.dump_image('vacation_pic'+str(i)+'.jpeg')
 
-def shoot_panorama(camera,motors,shots=5):
+def shoot_panorama(camera=Camera(),motors=Motors(),shots=5):
     s = 1
     im = IMR.Imager(image=camera.update()).scale(s,s)
     rotation_time = 3/shots # At a speed of 0.5(of max), it takes about 3 seconds to rotate 360 degrees

@@ -49,14 +49,16 @@ class BBCON():
 
         # Invoke the arbitrator by calling arbitrator.choose action, which will choose a winning behavior and
         # return that behavior's motor recommendations and halt request flag.
-        motor_recs, halt_request = self.arbitrator.choose_action()
-
+        #motor_recs, halt_request = self.arbitrator.choose_action()
+        motor_recs = ('L',90)
+        halt_request = False
         # Update the motobs based on these motor recommendations. The motobs will then update the settings of all motors
         for motob in self.motobs:
             if not halt_request:
                 motob.update(motor_recs)
             else:
                 motob.stop_motor()
+
 
 
         # Wait - This pause (in code execution) will allow the motor settings to remain active for a short period
