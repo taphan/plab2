@@ -4,7 +4,6 @@ import random
 class Arbitrator():
     def __init__(self,our_bbcon=bbcon.BBCON()):
         self.bbcon = our_bbcon
-        self.stochastic = False
         self.motor_recs = None
         self.halt_request = False
 
