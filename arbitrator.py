@@ -11,23 +11,21 @@ class Arbitrator():
     def choose_action(self,stochastic = False):
         if stochastic == False:
             highest_weight = -1
-            for behaviours in self.bbcon.active_behaviours:
-                if behaviours.weight > highest_weight:
-                    highest_weight = behaviours.weight
-                    self.motor_recs = behaviours
+            for behavior in self.bbcon.active_behaviors:
+                if behavior.weight > highest_weight:
+                    highest_weight = behavior.weight
+                    self.motor_recs = behavior.motor_recs
 
         elif stochastic == True:
             total_weight = 0
-            for behaviours in self.bbcon.active_behaviours:
-                total_weight += behaviours.weight
+            for behavior in self.bbcon.active_behaviors:
+                total_weight += behavior.weight
             random_number = random.uniform(0, total_weight)
             range = 0
-            for behaviours in self.bbcon.active_behaviours:
-                if range <= random_number < behaviours.weight:
-                    self.motor_recs = behaviours
+            for behavior in self.bbcon.active_behaviors:
+                if range <= random_number < behavior.weight:
+                    self.motor_recs = behavior.motor_recs
                     break
-                range= behaviours.weight
+                range= behavior.weight
 
-        if self.motor_recs.halt_request == True:
-            self.halt_request = True
         return self.motor_recs, self.halt_request

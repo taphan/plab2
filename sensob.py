@@ -33,7 +33,7 @@ class ReflectanceSensOb(Sensob):
     def reset(self):
         self.sensor.reset()
 
-class UltrasonicSensOb(Sensob):
+class UltrasonicSensob(Sensob):
 
     def __init__(self):
         self.sensor = ultrasonic.Ultrasonic()
@@ -62,6 +62,9 @@ class IRProximitySensob(Sensob):
     def update(self):
         self.values = self.sensor.update()
         return self.values
+
+    def get_value(self):
+        return self.sensor.get_value()
 
     def reset(self):
         self.sensor.reset()

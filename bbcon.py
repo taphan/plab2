@@ -20,6 +20,7 @@ class BBCON():
         self.motob = motob.Motob()
         self.arbitrator = arbitrator.Arbitrator(self)
 
+
     def add_behavior(self, behavior):
         # Append a newly-created behavior onto the behaviors list.
         self.behaviors.append(behavior)
@@ -49,18 +50,14 @@ class BBCON():
 
         # Invoke the arbitrator by calling arbitrator.choose action, which will choose a winning behavior and
         # return that behavior's motor recommendations and halt request flag.
-        #motor_recs, halt_request = self.arbitrator.choose_action()
-        motor_recs = ('L',90)
-        halt_request = False
+        motor_recs, halt_request = self.arbitrator.choose_action()
+
         # Update the motobs based on these motor recommendations. The motobs will then update the settings of all motors
-        #for motob in self.motobs:
-        print("test", motor_recs)
         if not halt_request:
             self.motob.update(motor_recs)
+            print("bbcon runonestep test gir motor recs: ", motor_recs)
         else:
             self.motob.stop_motor()
-
-
 
         # Wait - This pause (in code execution) will allow the motor settings to remain active for a short period
         # of time, e.g., one half second, thus producing activity in the robot, such as moving forward or turning.
@@ -68,3 +65,4 @@ class BBCON():
 
         for sob in self.sensobs: # Reset the sensobs
             sob.reset()
+            motor_recs = ('F',90)
