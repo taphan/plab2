@@ -28,6 +28,7 @@ def main():
 
     wander = behavior.Wander(our_bbcon)
     wander.active_flag = True
+    avoid_obs = behavior.AvoidObstacles(our_bbcon)
 
     '''color = behavior.Color(our_bbcon)
     follow_line = behavior.FollowLine(our_bbcon)
@@ -36,10 +37,14 @@ def main():
     #our_bbcon.add_behavior(color)
     #our_bbcon.activate_behavior(color)'''
     find_line = behavior.FindLine(our_bbcon)
+
     #avoidSideObstacles = behavior.AvoidObstacles(our_bbcon)
     our_bbcon.add_behavior(wander)
+    our_bbcon.add_behavior(avoid_obs)
     #our_bbcon.add_behavior(find_line)
+
     our_bbcon.activate_behavior(wander)
+    our_bbcon.activate_behavior(avoid_obs)
     #our_bbcon.activate_behavior(find_line)
 
     while True:
