@@ -54,6 +54,7 @@ class Color(Behavior):
         if not self.active_flag:
             self.sensor.reset()
         else:
+            self.line_status = self.bbcon.line_status
             self.sense_and_act()
             self.weight = self.priority*self.match_degree
 
@@ -77,9 +78,9 @@ class Color(Behavior):
             self.halt_request = True # Stopper hele testen dersom
 
 
-class FollowLine(Behavior):
+class FindLine(Behavior):
     def __init__(self,bbcon):
-        super(FollowLine, self).__init__(bbcon)
+        super(FindLine, self).__init__(bbcon)
         sensor = sensob.ReflectanceSensOb()
         self.bbcon.add_sensob(sensor)
         self.sensobs.append(sensor)
@@ -113,32 +114,21 @@ class FollowLine(Behavior):
                 self.sense_and_act()
 
     def sense_and_act(self):
-        if self.line_found_flag:
-            self.follow_line()
-        else:
-            self.find_line()
-    def find_line(self):
-        sensor = self.sensobs[0]
-        self.weight = self.match_degree * self.priority
+        self.find_line()
 
     def find_line(self):
         self.sensobs[0].update()
         sensor_values = self.sensobs[0].get_value()
 
         threshold = 0.75
+        self.weight = self.match_degree * self.priority
 
-        if sensor_values[5] - sensor_values[1] > threshold:
-            # black line found
+        if sum(sensor_values) < 1:   # If sensor found a dark area
             self.line_found_flag = True
             # turn 30 degrees left
-            self.motor_recs = ('L', 30)
+            self.motor_recs = ('L', 0)
             self.match_degree = 1
-            self.line_status = 1
-        elif sensor_values[0] - sensor_values[5] < threshold:
-            # white line found
-            # turn around (180 degrees left)
-            self.motor_recs = ('L', 180)
-            self.match_degree = 1
+            self.line_status = 2  # Set line_status to 2
 
     def follow_line(self):
         threshold = 0.75
@@ -192,25 +182,24 @@ class Wander(Behavior):
             self.consider_activation()
             if self.active_flag:
                 self.sense_and_act()
-        self.weight = self.match_degree * self.motor_recs
+        self.weight = self.match_degree * self.priority
 
     def sense_and_act(self):
-        threshold = 3
         self.match_degree = 1
-        if self.steps_this_direction > threshold:
-            rand1 = random.randint(0, 1)
+        if True:
+            rand1 = random.randint(0, 2)
             direction = 'L'
             if rand1 == 0:
                 direction = 'R'
+            elif rand1 == 2:
+                direction = 'F'
 
-            degrees = random.randint(0, 90)
+            degrees = random.randint(1, 90)
 
             self.motor_recs = (direction, degrees)
             self.bbcon.add_behavior(self)
 
             self.steps_this_direction = 0
-        else:
-            self.steps_this_direction += 1
 
 
 class AvoidObstacles(Behavior):

@@ -15,10 +15,10 @@ class Motob():
     def operationalize(self, motor_rec):
         # Først sjekk om mr er for venstre eller høyre hjul, mr er f.eks. (L, 45)
         # Make robot rotate 90 grader
-        if motor_rec[0] == 'L' and motor_rec[1] == 90:
-            self.motors.set_value([.5, -.5], 1) # Endrer på disse verdiene etter testing
-        elif motor_rec[0] == 'R' and motor_rec[1] == 90:
-            self.motors.set_value([-.5, -.1], 1)
+        if motor_rec[0] == 'L':
+            self.motors.set_value([.5, -.5], motor_rec[1] / 30) # Endrer på disse verdiene etter testing
+        elif motor_rec[0] == 'R':
+            self.motors.set_value([-.5, -.1], motor_rec[1] / 30) # 90 grader = 1 second, 180 grader = 3 seconds
         elif motor_rec[0] == 'F':
             self.motors.forward(.2,3)
 

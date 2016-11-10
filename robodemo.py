@@ -23,25 +23,25 @@ zumobutton = ZumoButton()
 
 def main():
     zumobutton.wait_for_press()
-    #our_arbitrator = arbitrator.Arbitrator(our_bbcon=bbcon.BBCON())
     our_bbcon = bbcon.BBCON()
     our_arbitrator = our_bbcon.arbitrator
-    '''color = behavior.Color()
-    our_bbcon.add_behavior(color)
-    our_bbcon.add_behavior(wander)
-    test = behavior.TestClass()'''
 
-    '''wander = behavior.Wander(our_bbcon)
+    wander = behavior.Wander(our_bbcon)
     wander.active_flag = True
-    wander.update()'''
-    #color = behavior.Color(our_bbcon)
+
+    '''color = behavior.Color(our_bbcon)
     follow_line = behavior.FollowLine(our_bbcon)
     side_sensor = behavior.AvoidObstacles(our_bbcon)
     #color.active_flag = True
     #our_bbcon.add_behavior(color)
-    #our_bbcon.activate_behavior(color)
-    our_bbcon.add_behavior(side_sensor)
-    our_bbcon.activate_behavior(side_sensor)
+    #our_bbcon.activate_behavior(color)'''
+    find_line = behavior.FindLine(our_bbcon)
+    #avoidSideObstacles = behavior.AvoidObstacles(our_bbcon)
+    our_bbcon.add_behavior(wander)
+    #our_bbcon.add_behavior(find_line)
+    our_bbcon.activate_behavior(wander)
+    #our_bbcon.activate_behavior(find_line)
+
     while True:
         our_bbcon.run_one_step()
 
