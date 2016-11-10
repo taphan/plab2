@@ -123,12 +123,23 @@ class FindLine(Behavior):
         threshold = 0.75
         self.weight = self.match_degree * self.priority
 
+<<<<<<< HEAD
         if sum(sensor_values) < 1:   # If sensor found a dark area
             self.line_found_flag = True
             # turn 30 degrees left
             self.motor_recs = ('L', 0)
             self.match_degree = 1
             self.line_status = 2  # Set line_status to 2
+=======
+        if sum(sensor_values) < 1:
+            #line found
+            # black line found
+            self.line_found_flag = True
+            # turn 30 degrees left
+            self.motor_recs = ('L', 30)
+            self.match_degree = 1
+            self.line_status = 1
+>>>>>>> 04a2a73e8a3971b62ec945ec7602a1a893360b11
 
     def follow_line(self):
         threshold = 0.75
@@ -136,12 +147,7 @@ class FindLine(Behavior):
         self.sensobs[0].update()
         sensor_values = self.sensobs[0].get_value()
 
-        if sensor_values[5] == sensor_values[4] and sensor_values[3] - sensor_values[5] > threshold:
-            # end of line found
-            self.line_status = 2
-            self.match_degree = 1
-            self.motor_recs = ('L', 0)
-        elif sensor_values[5] == sensor_values[3] and sensor_values[1] - sensor_values[4] > threshold:
+        if sensor_values[5] == sensor_values[3] and sensor_values[1] - sensor_values[4] > threshold:
             if self.last_left:
                 self.last_left = False
                 self.motor_recs = ('R', 5)
