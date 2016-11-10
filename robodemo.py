@@ -28,7 +28,16 @@ def main():
 
     wander = behavior.Wander(our_bbcon)
     wander.active_flag = True
+<<<<<<< HEAD
     avoid_obs = behavior.AvoidObstacles(our_bbcon)
+=======
+<<<<<<< HEAD
+    wander.update()
+
+    our_arbitrator.motor_recs = wander.motor_recs
+    our_bbcon.run_one_step()
+=======
+>>>>>>> 2a98408b945417a0ac6c79b5ab574032ae99d878
 
     '''color = behavior.Color(our_bbcon)
     follow_line = behavior.FollowLine(our_bbcon)
@@ -49,6 +58,7 @@ def main():
 
     while True:
         our_bbcon.run_one_step()
+>>>>>>> c7216997747245f26d7f43142655e334fcd12637
 
 
 def dancer():
