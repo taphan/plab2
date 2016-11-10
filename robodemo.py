@@ -19,22 +19,38 @@ import motob
 ## #  the edges of a table if it is run there.
 
 # This just moves the robot around in a fixed dance pattern.  It uses no sensors.
+zumobutton = ZumoButton()
 
 def main():
-    #our_arbitrator = arbitrator.Arbitrator(our_bbcon=bbcon.BBCON())
+    zumobutton.wait_for_press()
     our_bbcon = bbcon.BBCON()
     our_arbitrator = our_bbcon.arbitrator
-    '''color = behavior.Color()
-    our_bbcon.add_behavior(color)
-    our_bbcon.add_behavior(wander)
-    test = behavior.TestClass()'''
 
-    wander = behavior.Wander()
+    wander = behavior.Wander(our_bbcon)
     wander.active_flag = True
+<<<<<<< HEAD
     wander.update()
 
     our_arbitrator.motor_recs = wander.motor_recs
     our_bbcon.run_one_step()
+=======
+
+    '''color = behavior.Color(our_bbcon)
+    follow_line = behavior.FollowLine(our_bbcon)
+    side_sensor = behavior.AvoidObstacles(our_bbcon)
+    #color.active_flag = True
+    #our_bbcon.add_behavior(color)
+    #our_bbcon.activate_behavior(color)'''
+    find_line = behavior.FindLine(our_bbcon)
+    #avoidSideObstacles = behavior.AvoidObstacles(our_bbcon)
+    our_bbcon.add_behavior(wander)
+    #our_bbcon.add_behavior(find_line)
+    our_bbcon.activate_behavior(wander)
+    #our_bbcon.activate_behavior(find_line)
+
+    while True:
+        our_bbcon.run_one_step()
+>>>>>>> c7216997747245f26d7f43142655e334fcd12637
 
 
 def dancer():
@@ -78,7 +94,7 @@ def random_step(motors,speed=0.25,duration=1):
 # panoramo view, many of which may be created per "vacation".
 
 def tourist(steps=25,shots=5,speed=.25):
-    ZumoButton().wait_for_press()
+    zumobutton.wait_for_press()
     rs = ReflectanceSensors(); m = Motors(); c = Camera()
     for i in range(steps):
         random_step(m,speed=speed,duration=0.5)
