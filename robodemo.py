@@ -32,6 +32,7 @@ def main():
     wander = behavior.Wander()
     wander.active_flag = True
     wander.update()
+
     our_arbitrator.motor_recs = wander.motor_recs
     our_bbcon.run_one_step()
 
