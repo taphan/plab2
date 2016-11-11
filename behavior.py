@@ -174,10 +174,10 @@ class FindLine(Behavior):
         #self.weight = self.match_degree * self.priority
         self.weight = 0
         print("Les sensor: ", sensor_values)
-        if sum(sensor_values) < 1:   # If sensor found a dark area
+        # if sum(sensor_values) < 1:   # If sensor found a dark area
+        if sensor_values.count(0.0) >= 1: # If any (total six) sensors read dark (0.0)
             self.line_found_flag = True
-            # turn 30 degrees left
-            self.motor_recs = ('S', 0)
+            self.motor_recs = ('S', 0) # Send stop signal to motob
             print("Found line!!")
             self.match_degree = 1
             self.weight = self.match_degree * self.priority
