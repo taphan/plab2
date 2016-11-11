@@ -77,8 +77,11 @@ class Color(Behavior):
             self.weight = 1
         else:
             print('Tar bildet.')
-            im = IMR.Imager(image=self.sensor.update()).scale(1, 1)
-            im.dump_image('tatt_bilde.jpeg')
+
+            sensor_up = self.sensor.update()
+            sensor_up.save('tatt.png')
+            #im = IMR.Imager(image=self.sensor.update()).scale(1, 1)
+            #im.dump_image('tatt_bilde.jpeg')
             color = self.sensor.get_color()
             print("Test color:", color)
             print("Test value: ", self.sensor.get_value())
@@ -86,13 +89,43 @@ class Color(Behavior):
             self.weight = 1
             if color == 'red':
                 self.motor_recs = ('L', 90)
-            elif color == 'blue':
+            elif color == 'green':
                 self.motor_recs = ('R', 90)
             else:
                 self.motor_recs = ('L', 180)
                 self.halt_request = True # Stopper hele testen dersom
             self.picture_taken = True
 
+class IRFollow(Behavior):
+    def __init__(self, bbcon):
+        super(IRFollow, self).__init__(bbcon)
+        sensor = sensob.IRProximitySensob()
+        self.sensobs.append(sensor)
+        self.priority = 0.9
+        self.name = 'IRFollow'
+        self.line_status = self.bbcon.line_status
+
+    def consider_deactivation(self):
+        self.line_status = self.bbcon.line_status
+        if self.line_status != 0:
+            self.active_flag = False
+
+    def consider_activation(self):
+        self.line_status = self.bbcon.line_status
+        if self.line_status == 0:
+            self.active_flag = True
+
+
+    def update(self):
+        self.line_status = self.bbcon.line_status
+        if self.line_status == 0 or True:
+            self.sense_and_act()
+            self.weight = self.match_degree * self.priority
+        else:
+            self.weight = self.priority
+
+    def sense_and_act(self):
+        pass
 
 class FindLine(Behavior):
     def __init__(self,bbcon):
@@ -140,7 +173,7 @@ class FindLine(Behavior):
 
         #self.weight = self.match_degree * self.priority
         self.weight = 0
-
+        print("Les sensor: ", sensor_values)
         if sum(sensor_values) < 1:   # If sensor found a dark area
             self.line_found_flag = True
             # turn 30 degrees left
@@ -214,10 +247,8 @@ class Wander(Behavior):
         self.motor_recs = (direction, degrees)
         self.bbcon.add_behavior(self)
 
-        #self.steps_this_direction = 0
-
-
 class AvoidObstacles(Behavior):
+    # Endrer til å bruke ultralyd sensor
     def __init__(self,bbcon):
         super(AvoidObstacles, self).__init__(bbcon)
         # Denne Behavior-klassen bruker IRProx og Ultrasonic sensobene
@@ -231,6 +262,7 @@ class AvoidObstacles(Behavior):
 
     # Update match_degree according to readings from our sensors
     def sense_and_act(self):
+        ''' For IR
         # First check the obstacles on the side
         print(self.ir.values)
         if self.ir.values[0] == True and self.ir.values[1] == False:    # If right side of the robot meets a wall
@@ -243,15 +275,17 @@ class AvoidObstacles(Behavior):
             self.match_degree = 0
 
             self.motor_recs = ('F',90)
+        '''
 
         # For ultrasonic, only active when distance is in the range [0cm , 20cm]
-        # Får feilmelding, self.ultraget_value() er NoneType
-        '''elif self.ultra.get_value() > 20:    # If targets too far away, don't consider
+        if self.ultra.get_value() > 20:    # If targets too far away, don't consider
             self.match_degree = 0
+            self.motor_recs = ('F', 90)
         else:    # If distance is between 0 to 20cm
-            self.match_degree = abs( (self.ultra.get_value()/20) - 1)  # -1 to invert the scaled value
+            print("Found an obstacle with Ultrasonic sensor.")
+            self.match_degree = 1-(self.ultra.get_value()/20)   # scale the value
             self.motor_recs = ('L', 90)   # Guarantee that robot will move away from the wall at one point
-        '''
+
 
     def update(self):
         # Denne skal alltid søke etter obstacles så den skal ikke slås av
@@ -283,29 +317,3 @@ class StartButton(Behavior):
 
     def sense_and_act(self):
         pass
-
-class TestClass(Behavior):
-    '''
-def dancer():
-    ZumoButton().wait_for_press()
-    m = Motors()
-    m.forward(.2,3)
-    m.backward(.2,3)
-    m.right(.5,3)
-    m.left(.5,3)
-    m.backward(.3,2.5)
-    m.set_value([.5,.1],10)
-    m.set_value([-.5,-.1],10)'''
-    def __init__(self):
-        super(TestClass, self).__init__()
-        sensor = sensob.ZumoButton()
-
-    def update(self):
-        m =  motors.Motors()
-        m.forward(.2, 3)
-        m.backward(.2, 3)
-        m.right(.5, 3)
-        m.left(.5, 3)
-        m.backward(.3, 2.5)
-        m.set_value([.5, .1], 10)
-        m.set_value([-.5, -.1], 10)

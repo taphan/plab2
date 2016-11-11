@@ -46,6 +46,8 @@ def main():
     #color.active_flag = True
     #our_bbcon.add_behavior(color)
     #our_bbcon.activate_behavior(color)'''
+    color = behavior.Color(our_bbcon)
+    our_bbcon.add_behavior(color)
     find_line = behavior.FindLine(our_bbcon)
 
     our_bbcon.add_behavior(wander)
@@ -61,7 +63,6 @@ def main():
         if count == 2:
             our_bbcon.add_behavior(find_line)
             our_bbcon.activate_behavior(find_line)
-
 
 def dancer():
     ZumoButton().wait_for_press()

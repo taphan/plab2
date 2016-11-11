@@ -79,6 +79,7 @@ class CameraSensob(Sensob):
 
     def update(self):
         self.value = self.sensor.update()
+        return self.value
 
     def get_value(self):
         self.value = self.sensor.get_value()
