@@ -28,12 +28,11 @@ def main():
 
     wander = behavior.Wander(our_bbcon)
     wander.active_flag = True
-<<<<<<< HEAD
     wander.update()
 
     our_arbitrator.motor_recs = wander.motor_recs
     our_bbcon.run_one_step()
-=======
+
 
     '''color = behavior.Color(our_bbcon)
     follow_line = behavior.FollowLine(our_bbcon)
@@ -50,8 +49,6 @@ def main():
 
     while True:
         our_bbcon.run_one_step()
->>>>>>> c7216997747245f26d7f43142655e334fcd12637
-
 
 def dancer():
     ZumoButton().wait_for_press()
@@ -82,7 +79,6 @@ def explorer(dist=10):
         print(u.update())
         m.backward(.2,0.2)
     m.left(.75,5)
-
 
 
 def random_step(motors,speed=0.25,duration=1):
