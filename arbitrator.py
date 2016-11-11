@@ -7,6 +7,7 @@ class Arbitrator():
         self.bbcon = our_bbcon
         self.motor_recs = None
         self.halt_request = False
+        self.winner = 'None'
 
     def choose_action(self,stochastic = False):
         if stochastic == False:
@@ -15,6 +16,7 @@ class Arbitrator():
                 if behavior.weight > highest_weight:
                     highest_weight = behavior.weight
                     self.motor_recs = behavior.motor_recs
+                    self.winner = behavior.name
 
         elif stochastic == True:
             total_weight = 0
@@ -25,7 +27,10 @@ class Arbitrator():
             for behavior in self.bbcon.active_behaviors:
                 if range <= random_number < behavior.weight:
                     self.motor_recs = behavior.motor_recs
+                    self.winner = behavior.name
                     break
                 range= behavior.weight
+
+        print('The winner is: ' + self.winner)
 
         return self.motor_recs, self.halt_request

@@ -28,37 +28,30 @@ def main():
 
     wander = behavior.Wander(our_bbcon)
     wander.active_flag = True
-<<<<<<< HEAD
     avoid_obs = behavior.AvoidObstacles(our_bbcon)
-=======
-<<<<<<< HEAD
+
     wander.update()
 
     our_arbitrator.motor_recs = wander.motor_recs
     our_bbcon.run_one_step()
-=======
->>>>>>> 2a98408b945417a0ac6c79b5ab574032ae99d878
 
-    '''color = behavior.Color(our_bbcon)
-    follow_line = behavior.FollowLine(our_bbcon)
-    side_sensor = behavior.AvoidObstacles(our_bbcon)
-    #color.active_flag = True
-    #our_bbcon.add_behavior(color)
-    #our_bbcon.activate_behavior(color)'''
+    color = behavior.Color(our_bbcon)
+    our_bbcon.add_behavior(color)
+    #our_bbcon.activate_behavior(color)
     find_line = behavior.FindLine(our_bbcon)
 
-    #avoidSideObstacles = behavior.AvoidObstacles(our_bbcon)
     our_bbcon.add_behavior(wander)
     our_bbcon.add_behavior(avoid_obs)
-    #our_bbcon.add_behavior(find_line)
+    our_bbcon.add_behavior(find_line)
 
     our_bbcon.activate_behavior(wander)
     our_bbcon.activate_behavior(avoid_obs)
-    #our_bbcon.activate_behavior(find_line)
-
-    while True:
+    our_bbcon.activate_behavior(find_line)
+    count = 0
+    while count < 30:
+        count += 1
         our_bbcon.run_one_step()
->>>>>>> c7216997747245f26d7f43142655e334fcd12637
+
 
 
 def dancer():
@@ -108,8 +101,9 @@ def tourist(steps=25,shots=5,speed=.25):
         random_step(m,speed=speed,duration=0.5)
         vals = rs.update()
         if sum(vals) < 1:  # very dark area
-            im = shoot_panorama(c,m,shots)
-            im.dump_image('vacation_pic'+str(i)+'.jpeg')
+            #im = shoot_panorama(c,m,shots)
+            #im.dump_image('vacation_pic'+str(i)+'.jpeg')
+            print("Found line! Vals: ",vals)
 
 def shoot_panorama(camera=Camera(),motors=Motors(),shots=5):
     s = 1

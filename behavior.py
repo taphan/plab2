@@ -4,6 +4,8 @@ import motob
 import math
 import random
 import motors
+import imager2 as IMR
+
 
 class Behavior():
 
@@ -18,6 +20,7 @@ class Behavior():
         self.priority = 0 # Static
         self.match_degree = 0.0 # Et reelt tall mellom 0 og 1
         self.weight = 0.0 # Product of priority og match_degre
+        self.name = ''
 
     def consider_deactivation(self):
         raise NotImplementedError
@@ -40,14 +43,18 @@ class Color(Behavior):
         self.sensor = sensob.CameraSensob()
         self.bbcon.add_sensob(self.sensor)
         self.sensobs.append(self.sensor)
+        self.picture_taken = False
+        self.name = 'Color'
 
     def consider_deactivation(self):
-        if self.active_flag: # Forsørg at testen skjer bare når den er på
+        self.line_status = self.bbcon.line_status
+        if self.line_status == 0: # Forsørg at testen skjer bare når den er på
             self.active_flag = False
 
     def consider_activation(self):
         # Aktiveres kun når enden av linjen er funnet
-        if self.line_status == 2:
+        self.line_status = self.bbcon.line_status
+        if self.line_status != 0:
             self.active_flag = True
 
     def update(self):
@@ -55,8 +62,9 @@ class Color(Behavior):
             self.sensor.reset()
         else:
             self.line_status = self.bbcon.line_status
+            #self.weight = self.priority*self.match_degree
+            self.weight = 1
             self.sense_and_act()
-            self.weight = self.priority*self.match_degree
 
     def sense_and_act(self):
         """
@@ -64,18 +72,26 @@ class Color(Behavior):
         Blå: Snu høyre
         Grønn: Snu 180 grader og stopp
         """
-        self.sensor.update()
-        color = self.sensor.get_color()
-        print("Test color:", color)
-        print("Test value: ", self.sensor.get_value())
-
-        if color == 'red':
-            self.motor_recs = ('L', 90)
-        elif color == 'blue':
-            self.motor_recs = ('R', 90)
+        if self.picture_taken == True:
+            self.motor_recs = ('S', 0)
+            self.weight = 1
         else:
-            self.motor_recs = ('L', 180)
-            self.halt_request = True # Stopper hele testen dersom
+            print('Tar bildet.')
+            im = IMR.Imager(image=self.sensor.update()).scale(1, 1)
+            im.dump_image('tatt_bilde.jpeg')
+            color = self.sensor.get_color()
+            print("Test color:", color)
+            print("Test value: ", self.sensor.get_value())
+            self.match_degree = 1
+            self.weight = 1
+            if color == 'red':
+                self.motor_recs = ('L', 90)
+            elif color == 'blue':
+                self.motor_recs = ('R', 90)
+            else:
+                self.motor_recs = ('L', 180)
+                self.halt_request = True # Stopper hele testen dersom
+            self.picture_taken = True
 
 
 class FindLine(Behavior):
@@ -84,24 +100,26 @@ class FindLine(Behavior):
         sensor = sensob.ReflectanceSensOb()
         self.bbcon.add_sensob(sensor)
         self.sensobs.append(sensor)
-        self.priority = 0.7
+        self.priority = 0.9
         self.steps_line_followed = 0
         self.line_found_flag = False
         self.line_status = 0  # 0:found, 1: follows, 2: end reached
         self.last_left = False
+        self.name = 'FindLine'
 
     def consider_deactivation(self):
         if self.line_status == 2:
-            self.active_flag = False
-            return True
+            #self.active_flag = False
+            pass
+
 
     def consider_activation(self):
         if self.line_status == 0:
             self.active_flag = True
-            return True
+
         elif self.line_status == 1:
             self.active_flag = True
-            return True
+
 
     def update(self):
         if self.active_flag:
@@ -120,17 +138,19 @@ class FindLine(Behavior):
         self.sensobs[0].update()
         sensor_values = self.sensobs[0].get_value()
 
-        threshold = 0.75
-        self.weight = self.match_degree * self.priority
+        #self.weight = self.match_degree * self.priority
+        self.weight = 0
 
         if sum(sensor_values) < 1:   # If sensor found a dark area
             self.line_found_flag = True
             # turn 30 degrees left
-            self.motor_recs = ('L', 0)
+            self.motor_recs = ('S', 0)
+            print("Found line!!")
             self.match_degree = 1
+            self.weight = self.match_degree * self.priority
             self.line_status = 2  # Set line_status to 2
 
-
+    '''
     def follow_line(self):
         threshold = 0.75
 
@@ -148,7 +168,7 @@ class FindLine(Behavior):
         else:
             self.motor_recs = ('L', 0)
             self.match_degree = 0.9
-
+    '''
     def get_line_status(self):
         return self.line_status
 
@@ -159,43 +179,42 @@ class Wander(Behavior):
         self.priority = 0.3
         self.steps_this_direction = 0
         self.line_status = self.bbcon.line_status
+        self.name = 'Wander'
 
     def consider_activation(self):
+        self.line_status = self.bbcon.line_status
         if self.line_status == 0:
             self.active_flag = True
 
     def consider_deactivation(self):
+        self.line_status = self.bbcon.line_status
         if self.line_status != 0:
             self.active_flag = False
 
     def update(self):
         self.line_status = self.bbcon.line_status
-        if self.active_flag:
-            self.consider_deactivation()
-            if self.active_flag:
-                self.sense_and_act()
+        if self.line_status == 0 or True:
+            self.sense_and_act()
+            self.weight = self.match_degree * self.priority
         else:
-            self.consider_activation()
-            if self.active_flag:
-                self.sense_and_act()
-        self.weight = self.match_degree * self.priority
+            self.weight = self.priority
 
     def sense_and_act(self):
         self.match_degree = 1
-        if True:
-            rand1 = random.randint(0, 2)
-            direction = 'L'
-            if rand1 == 0:
-                direction = 'R'
-            elif rand1 == 2:
-                direction = 'F'
 
-            degrees = random.randint(1, 90)
+        rand1 = random.randint(0, 2)
+        direction = 'L'
+        if rand1 == 0:
+            direction = 'R'
+        elif rand1 == 2:
+            direction = 'F'
 
-            self.motor_recs = (direction, degrees)
-            self.bbcon.add_behavior(self)
+        degrees = random.randint(1, 90)
 
-            self.steps_this_direction = 0
+        self.motor_recs = (direction, degrees)
+        self.bbcon.add_behavior(self)
+
+        #self.steps_this_direction = 0
 
 
 class AvoidObstacles(Behavior):
@@ -207,7 +226,8 @@ class AvoidObstacles(Behavior):
         self.sensobs.append(self.ir) ; self.sensobs.append(self.ultra)
         self.bbcon.add_sensob(self.ir)
         self.bbcon.add_sensob(self.ultra)
-        self.priority = 0.9
+        self.priority = 0.7
+        self.name = 'AvoidObstacles'
 
     # Update match_degree according to readings from our sensors
     def sense_and_act(self):
@@ -215,8 +235,13 @@ class AvoidObstacles(Behavior):
         print(self.ir.values)
         if self.ir.values[0] == True and self.ir.values[1] == False:    # If right side of the robot meets a wall
             self.match_degree = 1
-            self.motor_recs = ('R',90)   # Turn left 90 degrees
+            self.motor_recs = ('L',60)   # Turn left 90 degrees
+        elif self.ir.values[0] == False and self.ir.values[1] == True:
+            self.match_degree = 0
+
         else:
+            self.match_degree = 0
+
             self.motor_recs = ('F',90)
 
         # For ultrasonic, only active when distance is in the range [0cm , 20cm]
@@ -226,12 +251,18 @@ class AvoidObstacles(Behavior):
         else:    # If distance is between 0 to 20cm
             self.match_degree = abs( (self.ultra.get_value()/20) - 1)  # -1 to invert the scaled value
             self.motor_recs = ('L', 90)   # Guarantee that robot will move away from the wall at one point
-'''
+        '''
 
     def update(self):
         # Denne skal alltid søke etter obstacles så den skal ikke slås av
         self.sense_and_act()
         self.weight = self.priority*self.match_degree
+
+    def consider_activation(self):
+        self.active_flag = True
+
+    def consider_deactivation(self):
+        self.active_flag = True
 
 class StartButton(Behavior):
 

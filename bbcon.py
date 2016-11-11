@@ -45,8 +45,19 @@ class BBCON():
         for sob in self.sensobs: # Update all sensobs
             sob.update()
 
+        for behavior in self.behaviors:
+            behavior.consider_activation()
+            if behavior not in self.active_behaviors and behavior.active_flag == True:
+                self.activate_behavior(behavior)
+
         for behavior in self.active_behaviors: # Update all behaviors
-            behavior.update()
+            behavior.consider_deactivation()
+            if behavior.active_flag == False:
+                self.deactive_behavior(behavior)
+            else:
+                behavior.update()
+            if behavior.name == 'FindLine':
+                self.line_status = behavior.get_line_status()
 
         # Invoke the arbitrator by calling arbitrator.choose action, which will choose a winning behavior and
         # return that behavior's motor recommendations and halt request flag.
@@ -61,7 +72,7 @@ class BBCON():
 
         # Wait - This pause (in code execution) will allow the motor settings to remain active for a short period
         # of time, e.g., one half second, thus producing activity in the robot, such as moving forward or turning.
-        time.sleep(0.5)
+        time.sleep(0.1)
 
         for sob in self.sensobs: # Reset the sensobs
             sob.reset()

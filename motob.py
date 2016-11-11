@@ -16,11 +16,13 @@ class Motob():
         # Først sjekk om mr er for venstre eller høyre hjul, mr er f.eks. (L, 45)
         # Make robot rotate 90 grader
         if motor_rec[0] == 'L':
-            self.motors.set_value([.5, -.5], motor_rec[1] / 30) # Endrer på disse verdiene etter testing
+            self.motors.set_value([.5, -.5], motor_rec[1] / 60) # Endrer på disse verdiene etter testing
         elif motor_rec[0] == 'R':
-            self.motors.set_value([-.5, -.1], motor_rec[1] / 30) # 90 grader = 1 second, 180 grader = 3 seconds
+            self.motors.set_value([-.5, .5], motor_rec[1] / 60) # 90 grader = 1 second, 180 grader = 3 seconds
         elif motor_rec[0] == 'F':
-            self.motors.forward(.2,3)
+            self.motors.forward(.4,0.4)
+        elif motor_rec[0] == 'S':
+            self.motors.stop()
 
     def stop_motor(self):
         self.motors.stop()
