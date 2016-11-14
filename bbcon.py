@@ -13,6 +13,7 @@ class BBCON():
         """
         self.line_status = 0 # Blir lest av Color og Wander behaviors for å sjekke om de kan bli aktivert
         self.timestep = 0
+        self.halt_request = False
 
         self.behaviors = []
         self.active_behaviors = []
@@ -58,21 +59,15 @@ class BBCON():
                 self.line_status = behavior.get_line_status()
         # Invoke the arbitrator by calling arbitrator.choose action, which will choose a winning behavior and
         # return that behavior's motor recommendations and halt request flag.
-        motor_recs, halt_request = self.arbitrator.choose_action()
+        motor_recs, self.halt_request = self.arbitrator.choose_action()
         # Update the motobs based on these motor recommendations. The motobs will then update the settings of all motors
-        if not halt_request:
-            self.motob.update(motor_recs)
-            print("bbcon runonestep test gir motor recs: ", motor_recs)
-        else:
+        self.motob.update(motor_recs)
+        print("bbcon runonestep test gir motor recs: ", motor_recs)
+        if self.halt_request:
             self.motob.stop_motor()
         # Wait - This pause (in code execution) will allow the motor settings to remain active for a short period
         # of time, e.g., one half second, thus producing activity in the robot, such as moving forward or turning.
-<<<<<<< HEAD
         time.sleep(0.5)
-
-=======
-        time.sleep(1.5)
->>>>>>> f9b144e90ed9501f72d55de2211164d1c64a9d72
         for sob in self.sensobs: # Reset the sensobs
             sob.reset()
             motor_recs = ('F',90)

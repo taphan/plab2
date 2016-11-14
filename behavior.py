@@ -65,26 +65,22 @@ class Color(Behavior):
             #self.weight = self.priority*self.match_degree
             self.weight = 1
             self.sense_and_act()
+            self.halt_request = True # Stopper programmet etter vi har tatt et bilde
 
     def sense_and_act(self):
         """
         Rød: Snu venstre
-        Blå: Snu høyre
-        Grønn: Snu 180 grader og stopp
+        Grønn: Snu høyre
         """
         if self.picture_taken == True:
             self.motor_recs = ('S', 0)
             self.weight = 1
         else:
             print('Tar bildet.')
-
-            sensor_up = self.sensor.update()
-            sensor_up.save('tatt.png')
-            #im = IMR.Imager(image=self.sensor.update()).scale(1, 1)
-            #im.dump_image('tatt_bilde.jpeg')
+            im = IMR.Imager(image=self.sensor.update()).scale(1, 1)
+            im.dump_image('tatt_bilde.jpeg')
             color = self.sensor.get_color()
             print("Test color:", color)
-            print("Test value: ", self.sensor.get_value())
             self.match_degree = 1
             self.weight = 1
             if color == 'red':
@@ -95,12 +91,14 @@ class Color(Behavior):
                 self.motor_recs = ('L', 180)
                 self.halt_request = True # Stopper hele testen dersom
             self.picture_taken = True
+            self.bbcon.active_count = False # Stopp hele programmet
 
 class IRFollow(Behavior):
     def __init__(self, bbcon):
         super(IRFollow, self).__init__(bbcon)
-        sensor = sensob.IRProximitySensob()
-        self.sensobs.append(sensor)
+        self.ir = sensob.IRProximitySensob()
+        self.sensobs.append(self.ir)
+        self.bbcon.add_sensob(self.ir)
         self.priority = 0.9
         self.name = 'IRFollow'
         self.line_status = self.bbcon.line_status
@@ -115,7 +113,6 @@ class IRFollow(Behavior):
         if self.line_status == 0:
             self.active_flag = True
 
-
     def update(self):
         self.line_status = self.bbcon.line_status
         if self.line_status == 0 or True:
@@ -125,7 +122,17 @@ class IRFollow(Behavior):
             self.weight = self.priority
 
     def sense_and_act(self):
-        pass
+        print(self.ir.values)
+        # First check the obstacles on the side
+        if self.ir.values[0] == True and self.ir.values[1] == False:    # If right side of the robot meets a wall
+            self.match_degree = 1
+            self.motor_recs = ('R',30)   # Turn left 90 degrees
+        elif self.ir.values[0] == False and self.ir.values[1] == True:
+            self.match_degree = 1
+            self.motor_recs = ('L',30)
+        else:
+            self.match_degree = 0
+            self.motor_recs = ('F',90) # In case this gets activated by mistake
 
 class FindLine(Behavior):
     def __init__(self,bbcon):
@@ -244,7 +251,7 @@ class Wander(Behavior):
 
         degrees = random.randint(1, 90)
 
-        self.motor_recs = (direction, degrees)
+        self.motor_recs = (direction, None)
         self.bbcon.add_behavior(self)
 
 class AvoidObstacles(Behavior):
@@ -252,30 +259,14 @@ class AvoidObstacles(Behavior):
     def __init__(self,bbcon):
         super(AvoidObstacles, self).__init__(bbcon)
         # Denne Behavior-klassen bruker IRProx og Ultrasonic sensobene
-        self.ir = sensob.IRProximitySensob()
         self.ultra = sensob.UltrasonicSensob()
-        self.sensobs.append(self.ir) ; self.sensobs.append(self.ultra)
-        self.bbcon.add_sensob(self.ir)
+        self.sensobs.append(self.ultra)
         self.bbcon.add_sensob(self.ultra)
         self.priority = 0.7
         self.name = 'AvoidObstacles'
 
     # Update match_degree according to readings from our sensors
     def sense_and_act(self):
-        ''' For IR
-        # First check the obstacles on the side
-        print(self.ir.values)
-        if self.ir.values[0] == True and self.ir.values[1] == False:    # If right side of the robot meets a wall
-            self.match_degree = 1
-            self.motor_recs = ('L',60)   # Turn left 90 degrees
-        elif self.ir.values[0] == False and self.ir.values[1] == True:
-            self.match_degree = 0
-
-        else:
-            self.match_degree = 0
-
-            self.motor_recs = ('F',90)
-        '''
 
         # For ultrasonic, only active when distance is in the range [0cm , 20cm]
         if self.ultra.get_value() > 20:    # If targets too far away, don't consider
